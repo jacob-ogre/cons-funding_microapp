@@ -1,15 +1,16 @@
 
 library(dplyr)
-library(ggplot2)
-library(ggthemes)
+# library(ggplot2)
+# library(ggthemes)
 library(plotly)
-library(scales)
+# library(scales)
 library(shiny)
 library(stringr)
-library(viridis)
 
 # dat <- readRDS("/Users/jacobmalcom/Work/Repos/analyses/signatory_listing_cons-funding/current_signatories.rds")
-dat <- readRDS("/home/jacobmalcom/cronjobs/border_signatories/current_signatories.rds")
+# dat <- readRDS("/home/jacobmalcom/cronjobs/conservation-funding/current_signatories.rds")
+dat <- readRDS("current_signatories.rds")
+system("touch restart.txt", intern = FALSE)
 
 ui <- fluidPage(
   column(2),
@@ -20,12 +21,11 @@ ui <- fluidPage(
          h2("Scientists Signatories:"),
          h1(length(dat$category))),
     hr(),
-    # plotlyOutput("cat_plt"),
-    h2("Signatories of Countries (Top 10)"),
+    h2(style="text-align:center;", "Signatories by Country (Top 10)"),
     plotlyOutput("country_plt"),
-    h2("Signatories by State (Top 10)"),
+    h2(style="text-align:center;", "Signatories by State (Top 10)"),
     plotlyOutput("state_plt"),
-    h2("Signatories by Degree"),
+    h2(style="text-align:center;", "Signatories by Degree"),
     plotlyOutput("deg_plt") #,
   ),
   column(2)
@@ -33,18 +33,10 @@ ui <- fluidPage(
 
 
 server <- shinyServer(function(input, output) {
-  # cat <- as.data.frame(table(dat$category))
-  # output$cat_plt <- renderPlotly({
-  #   plot_ly(data = cat,  x = ~Var1,  y = ~Freq, type = "bar",
-  #           marker = list(color = "#7A3777")) %>%
-  #     layout(xaxis = list(title = "", size = 18),
-  #            yaxis = list(title = "# Signatories", size = 18))
-  #            
-  # })
   
   cnt <- table(dat$country) %>%
-    # sort(decreasing = TRUE) %>%
-    # head(10) %>%
+    sort(decreasing = TRUE) %>%
+    head(10) %>%
     as.data.frame()
   output$country_plt <- renderPlotly({
     plot_ly(data = cnt, x = ~Var1, y = ~Freq, type = "bar",
@@ -54,8 +46,8 @@ server <- shinyServer(function(input, output) {
   })
   
   ste <- table(dat$state) %>%
-    # sort(decreasing = TRUE) %>%
-    # head(10) %>%
+    sort(decreasing = TRUE) %>%
+    head(10) %>%
     as.data.frame()
   output$state_plt <- renderPlotly({
     plot_ly(data = ste, x = ~Var1, y = ~Freq, type = "bar",
